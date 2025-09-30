@@ -1,12 +1,14 @@
-import { ModeToggle } from "./components/mode-toggle";
-import { Button } from "./components/ui/button";
+import { Header } from './components/header';
+import { PageContainer } from './components/page-container';
+import { PageContent } from './components/page-content';
+
 
 export function App() {
   return (
-    <div>
-      <h1>Task Manager</h1>
-      <Button> Meu Botão </Button>
-	  <ModeToggle />
-    </div>
+    <PageContainer>
+      <PageContent>
+       <Header />
+      </PageContent>
+    </PageContainer>
   );
 }
