@@ -1,49 +1,49 @@
-import type { ContextProps, ContextProviderProps } from "@/interfaces/interfaces";
-import { getAllTasks } from "@/routes/get-all-tasks";
-import { useQuery } from "@tanstack/react-query";
-import { createContext, useContext } from "react";
+import { useQuery } from '@tanstack/react-query';
+import { createContext, useContext } from 'react';
+import type {
+  ContextProps,
+  ContextProviderProps,
+} from '@/interfaces/interfaces';
+import { ErrorPage } from '@/pages/error.page';
+import { Loading } from '@/pages/loading';
+import { getAllTasks } from '@/routes/get-all-tasks';
 
-
-const StateContext = createContext<ContextProps>({})
+const StateContext = createContext<ContextProps>({});
 
 export const TasksDataContextProvider = ({
-  children
- } : ContextProviderProps) => {
-   const {  data, isLoading, isError, error, refetch} = useQuery({
-      queryKey: ['tasksData'],
-      queryFn: getAllTasks,
-      staleTime: 60000
+  children,
+}: ContextProviderProps) => {
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ['tasksData'],
+    queryFn: getAllTasks,
+    staleTime: 60000,
+  });
 
-   });
+  if (isLoading) {
+    return <Loading />;
+  }
 
-   if (isLoading) {
-    return <div>carregando..</div>;
-   }
-
-   if (isError) {
+  if (isError) {
     console.error(error);
-    return <div>Deu erro...</div>
-   }
+    return <ErrorPage />;
+  }
 
-   if (!data) {
+  if (!data) {
     return;
-   }
+  }
 
-   return (
-    <StateContext.Provider value={{
-      data,
-      isLoading,
-      isError,
-      refetchTaskData: refetch
-    }}>
-
+  return (
+    <StateContext.Provider
+      value={{
+        data,
+        isLoading,
+        isError,
+        refetchTaskData: refetch,
+      }}
+    >
       {children}
     </StateContext.Provider>
+  );
+};
 
-   )
-
- }
-
- export const useTasksContext = () => useContext(StateContext);
-
- 
+export const useTasksContext = () => useContext(StateContext);
