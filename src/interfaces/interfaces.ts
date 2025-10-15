@@ -9,7 +9,6 @@ export interface PageContentProps {
 }
 
 export interface Task {
-  _id: string;
   id: string;
   title: string;
   description: string;
@@ -37,3 +36,6 @@ export interface ContextProviderProps {
 }
 
 
+export interface TaskCardProps {
+  task: Task;
+}
