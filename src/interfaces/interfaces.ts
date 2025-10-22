@@ -13,23 +13,32 @@ export interface Task {
   title: string;
   description: string;
   completed: boolean;
-  images : [string];
+  images :string[];
   createdAt: Date;
   updatedAt: Date;
   __v: number;
 }
 
 export interface TaskData {
-  tasks: Array<Task>
+  _id: string;
+  title: string;
+  description: string;
+  completed: boolean;
+  images: string[];
+  createdAt: string; // normalmente string quando vem do backend
+  updatedAt: string;
+  __v?: number;
 }
+
+
 
 export interface ContextProps {
-  isLoading?: boolean;
-  isError?: boolean;
-  data?: TaskData;
-  refetchTaskData?: () => void;
-
+  data: TaskData[];
+  isLoading: boolean;
+  isError: boolean;
+  refetchTaskData: () => void;
 }
+
 
 export interface ContextProviderProps {
   children: ReactNode;
@@ -39,3 +48,15 @@ export interface ContextProviderProps {
 export interface TaskCardProps {
   task: Task;
 }
+
+export interface NewTaskProps {
+  title: string;
+  description: string;
+  images: Array<string>;
+
+}
+
+export interface CreateNewTaskProps {
+  task: NewTaskProps;
+}
+      
