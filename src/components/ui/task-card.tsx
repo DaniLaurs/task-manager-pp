@@ -1,7 +1,12 @@
+/** biome-ignore-all lint/correctness/noUnusedImports: <> */
 import * as TogglePrimitive from '@radix-ui/react-toggle';
+import { useMutation } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 import type { VariantProps } from 'class-variance-authority';
 import { CheckCircle, Circle, Edit, Trash } from 'lucide-react';
 import * as React from 'react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,10 +41,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useTasksContext } from '@/contexts/tasks-context';
 import type { Task } from '@/interfaces/interfaces';
 import { cn } from '@/lib/utils';
+import { changeTaskCompletion } from '@/routes/change-task-completion';
+import { deleteTask } from '@/routes/delete-task';
 import { Button } from './button';
 import { toggleVariants } from './toggle';
+import { UpdateTaskForm } from './update-task-form';
 
 const Toggle = React.forwardRef<
   React.ElementRef<typeof TogglePrimitive.Root>,
@@ -70,6 +79,39 @@ export function TaskCard({ task }: TaskCardProps) {
       ? task.images
       : fallbackImages;
 
+  const [updateDialogIsOpen, setUpdateDialogIsOpen] = useState<boolean>(false);
+  const { refetchTaskData } = useTasksContext();
+
+  const { mutate: changeTaskCompletionRequest } = useMutation({
+    mutationFn: changeTaskCompletion,
+    onSuccess: () => {
+      toast.success('Parabéns!!! Você completou mais uma tarefa');
+      refetchTaskData?.();
+    },
+    onError: (error: AxiosError) => {
+      console.error(error);
+    },
+  });
+
+  const handleChangeTaskCompletion = () => {
+    changeTaskCompletionRequest({ taskId: task.id });
+  };
+
+  const { mutate: deleteTaskRequest } = useMutation({
+    mutationFn: deleteTask,
+    onSuccess: () => {
+      toast.success('Tarefa deletada com sucesso !');
+      refetchTaskData?.();
+    },
+    onError: (error: AxiosError) => {
+      console.error(error);
+    },
+  });
+
+  const handleDeleteTask = () => {
+    deleteTaskRequest({ taskId: task.id });
+  };
+
   return (
     <Card
       className={cn(
@@ -81,7 +123,7 @@ export function TaskCard({ task }: TaskCardProps) {
     >
       {/* Botões editar / deletar */}
       <div className='absolute right-2 top-2 flex items-center gap-3 z-20'>
-        <Dialog>
+        <Dialog open={updateDialogIsOpen} onOpenChange={setUpdateDialogIsOpen}>
           <DialogTrigger asChild>
             <Button
               size='icon'
@@ -98,7 +140,15 @@ export function TaskCard({ task }: TaskCardProps) {
                 Edite as informações da sua tarefa.
               </DialogDescription>
             </DialogHeader>
-            <div>Aqui será o formulário de edição</div>
+
+            <div className='grid gap-4 py-4'>
+              <div className='flex flex-col gap-2'>
+                <UpdateTaskForm
+                  task={task}
+                  onClose={() => setUpdateDialogIsOpen(false)}
+                />
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
 
@@ -117,7 +167,10 @@ export function TaskCard({ task }: TaskCardProps) {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction className='bg-red-600 hover:bg-red-700 text-white'>
+              <AlertDialogAction
+                onClick={handleDeleteTask}
+                className='bg-red-600 hover:bg-red-700 text-white'
+              >
                 Deletar
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -166,7 +219,11 @@ export function TaskCard({ task }: TaskCardProps) {
 
       {/* Rodapé */}
       <CardFooter className='p-0 mt-4'>
-        <Toggle pressed={task.completed} className='flex items-center gap-2'>
+        <Toggle
+          pressed={task.completed}
+          onPressedChange={handleChangeTaskCompletion}
+          className='flex items-center gap-2'
+        >
           {task.completed ? (
             <>
               <CheckCircle className='text-green-500' /> Marcar como pendente
@@ -180,4 +237,7 @@ export function TaskCard({ task }: TaskCardProps) {
       </CardFooter>
     </Card>
   );
+}
+function setErrorMessage(_statusText: string | undefined) {
+  throw new Error('Function not implemented.');
 }
