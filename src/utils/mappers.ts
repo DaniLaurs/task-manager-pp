@@ -1,4 +1,4 @@
-import type { TaskData, Task } from '@/interfaces/interfaces';
+import type { Task, TaskData } from '@/interfaces/interfaces';
 
 export function mapTask(task: TaskData): Task {
   return {
