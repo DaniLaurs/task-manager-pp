@@ -60,7 +60,7 @@ export interface NewTaskProps {
 // 🧩 Props do formulário de criação
 export interface CreateTaskFormProps {
   task?: NewTaskProps; // opcional (modo edição)
-  onClose: () => void; // usado no componente
+  onClose?: () => void; // usado no componente
 }
 
 // 📡 Payload enviado à API na criação
