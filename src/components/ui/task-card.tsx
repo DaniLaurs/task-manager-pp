@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/correctness/noUnusedImports: <> */
 import * as TogglePrimitive from '@radix-ui/react-toggle';
 import { useMutation } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
@@ -36,7 +35,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -79,7 +77,7 @@ export function TaskCard({ task }: TaskCardProps) {
       ? task.images
       : fallbackImages;
 
-  const [updateDialogIsOpen, setUpdateDialogIsOpen] = useState<boolean>(false);
+  const [updateDialogIsOpen, setUpdateDialogIsOpen] = useState(false);
   const { refetchTaskData } = useTasksContext();
 
   const { mutate: changeTaskCompletionRequest } = useMutation({
@@ -88,25 +86,21 @@ export function TaskCard({ task }: TaskCardProps) {
       toast.success('Parabéns!!! Você completou mais uma tarefa');
       refetchTaskData?.();
     },
-    onError: (error: AxiosError) => {
-      console.error(error);
+    onError: (error: AxiosError) => console.error(error),
+  });
+
+  const { mutate: deleteTaskRequest } = useMutation({
+    mutationFn: deleteTask,
+    onSuccess: () => {
+      toast.success('Tarefa deletada com sucesso!');
+      refetchTaskData?.();
     },
+    onError: (error: AxiosError) => console.error(error),
   });
 
   const handleChangeTaskCompletion = () => {
     changeTaskCompletionRequest({ taskId: task.id });
   };
-
-  const { mutate: deleteTaskRequest } = useMutation({
-    mutationFn: deleteTask,
-    onSuccess: () => {
-      toast.success('Tarefa deletada com sucesso !');
-      refetchTaskData?.();
-    },
-    onError: (error: AxiosError) => {
-      console.error(error);
-    },
-  });
 
   const handleDeleteTask = () => {
     deleteTaskRequest({ taskId: task.id });
@@ -115,7 +109,7 @@ export function TaskCard({ task }: TaskCardProps) {
   return (
     <Card
       className={cn(
-        'w-[280px] min-h-[180px] p-4 rounded-lg shadow-md bg-card text-card-foreground relative overflow-hidden transition-all',
+        'w-[280px] min-h-[180px] p-4 rounded-lg shadow-md bg-card text-card-foreground relative overflow-hidden transition-all select-none',
         task.completed
           ? 'border-green-500'
           : 'border-zinc-700 hover:border-zinc-500',
@@ -136,18 +130,12 @@ export function TaskCard({ task }: TaskCardProps) {
           <DialogContent className='sm:max-w-[425px]'>
             <DialogHeader>
               <DialogTitle>Editar tarefa</DialogTitle>
-              <DialogDescription>
-                Edite as informações da sua tarefa.
-              </DialogDescription>
             </DialogHeader>
-
             <div className='grid gap-4 py-4'>
-              <div className='flex flex-col gap-2'>
-                <UpdateTaskForm
-                  task={task}
-                  onClose={() => setUpdateDialogIsOpen(false)}
-                />
-              </div>
+              <UpdateTaskForm
+                task={task}
+                onClose={() => setUpdateDialogIsOpen(false)}
+              />
             </div>
           </DialogContent>
         </Dialog>
@@ -192,25 +180,24 @@ export function TaskCard({ task }: TaskCardProps) {
           <Carousel className='w-full'>
             <CarouselContent>
               {imagesToUse.map((image, index) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: <>
-                <CarouselItem key={index} className='basis-full'>
+                <CarouselItem
+                  key={`${index}-${image}`}
+                  className='basis-full select-none'
+                >
                   <img
                     src={image}
                     alt={`Imagem ${index + 1} da tarefa ${task.title}`}
-                    className='w-full h-[150px] object-cover rounded-md'
-                    onError={() =>
-                      console.warn('Erro ao carregar a imagem:', image)
-                    }
+                    className='w-full h-[150px] object-cover rounded-md select-none pointer-events-none'
+                    draggable={false}
                   />
                 </CarouselItem>
               ))}
             </CarouselContent>
 
-            {/* Setas de navegação */}
-            <CarouselPrevious className='absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white hover:bg-black/70 rounded-full p-2 transition'>
+            <CarouselPrevious className='absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white hover:bg-black/70 rounded-full p-2 transition select-none pointer-events-auto'>
               ‹
             </CarouselPrevious>
-            <CarouselNext className='absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white hover:bg-black/70 rounded-full p-2 transition'>
+            <CarouselNext className='absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white hover:bg-black/70 rounded-full p-2 transition select-none pointer-events-auto'>
               ›
             </CarouselNext>
           </Carousel>
@@ -237,7 +224,4 @@ export function TaskCard({ task }: TaskCardProps) {
       </CardFooter>
     </Card>
   );
-}
-function setErrorMessage(_statusText: string | undefined) {
-  throw new Error('Function not implemented.');
 }

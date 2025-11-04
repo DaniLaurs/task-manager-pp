@@ -20,7 +20,6 @@ export function App() {
   const { tasks: contextTasks, isLoading, isError } = useTasksContext();
   const [search, setSearch] = useState('');
 
-  // ✅ Filtragem segura
   const filteredTasks = (!isLoading ? contextTasks : []).filter(task => {
     const searchLower = search.toLowerCase().trim();
     if (!searchLower) return true;
@@ -29,7 +28,6 @@ export function App() {
     return title.includes(searchLower) || description.includes(searchLower);
   });
 
-  // ✅ Separar tarefas pendentes e concluídas
   const tasksPending = filteredTasks.filter(task => !task.completed);
   const tasksCompleted = filteredTasks.filter(task => task.completed);
 
@@ -42,7 +40,7 @@ export function App() {
         <PageContent>
           <Header />
 
-          {/* 🔎 Campo de pesquisa */}
+          {/* Campo de pesquisa */}
           <div className='w-full flex items-center gap-3 my-5'>
             <Label htmlFor='search-input'>Pesquisar</Label>
 
@@ -57,12 +55,21 @@ export function App() {
 
             {search && (
               <Tooltip>
-                <TooltipTrigger>
-                  <X
-                    className='cursor-pointer opacity-50'
-                    onClick={() => setSearch('')}
-                  />
+                <TooltipTrigger asChild>
+                  <button
+                    type='button'
+                    aria-label='Limpar pesquisa'
+                    onClick={() => {
+                      setSearch(''); // limpa o state
+                      document.getElementById('search-input')?.blur(); // remove o foco
+                    }}
+                    onMouseDown={e => e.preventDefault()} // evita que o clique passe para o carrossel
+                    className='p-1 rounded-md hover:bg-gray-100 transition flex items-center justify-center'
+                  >
+                    <X className='w-5 h-5 opacity-50 hover:opacity-100 transition' />
+                  </button>
                 </TooltipTrigger>
+                s{' '}
                 <TooltipContent>
                   <p>Limpar</p>
                 </TooltipContent>
@@ -70,19 +77,17 @@ export function App() {
             )}
           </div>
 
-          {/* 📋 Lista de tarefas */}
+          {/* Lista de tarefas */}
           <div className='flex flex-col gap-6 mt-5'>
-            {/* 🟡 TAREFAS PENDENTES */}
             {tasksPending.length > 0 && (
               <>
                 <div className='flex items-center gap-3'>
-                  <h2 className='text-xl font-semibol  text-red-500 whitespace-nowrap bg-transparent'>
+                  <h2 className='text-xl font-semibold text-red-500 whitespace-nowrap'>
                     Pendentes
                   </h2>
                   <div className='flex-1 h-px bg-red-950' />
                 </div>
-
-                <div className='grid grid-cols-3 gap-4'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                   {tasksPending.map(task => (
                     <TaskCard key={task.id} task={task} />
                   ))}
@@ -90,7 +95,6 @@ export function App() {
               </>
             )}
 
-            {/* 🟢 TAREFAS CONCLUÍDAS */}
             {tasksCompleted.length > 0 && (
               <>
                 <div className='flex items-center gap-3 mt-5'>
@@ -99,8 +103,7 @@ export function App() {
                   </h2>
                   <div className='flex-1 h-px bg-green-500/30' />
                 </div>
-
-                <div className='grid grid-cols-3 gap-4'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                   {tasksCompleted.map(task => (
                     <TaskCard key={task.id} task={task} />
                   ))}
@@ -108,7 +111,6 @@ export function App() {
               </>
             )}
 
-            {/* ⚪ Nenhuma tarefa */}
             {tasksPending.length === 0 && tasksCompleted.length === 0 && (
               <p className='text-gray-400 text-center mt-10'>
                 Nenhuma tarefa encontrada.
@@ -116,7 +118,6 @@ export function App() {
             )}
           </div>
 
-          {/* 📝 Mensagem inicial se não existir nenhuma tarefa */}
           {contextTasks.length < 1 && (
             <h2 className='text-lg font-semibold text-center mt-20'>
               Você ainda não criou nenhuma tarefa. Aproveite para criar a
