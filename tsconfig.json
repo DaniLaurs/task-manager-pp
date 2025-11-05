@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler", // ✅ ESSENCIAL — ou "node16"
     "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,
@@ -15,7 +15,8 @@
     },
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "types": ["vite/client"] // ✅ adiciona tipagem de import.meta.env
   },
   "include": ["src", "src/@types", "vite.config.ts"]
 }
