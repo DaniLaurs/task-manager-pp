@@ -22,7 +22,7 @@ import {
 import { Input } from '../ui/input';
 import { Button } from './button';
 
-// 🧠 Esquema de validação com Zod
+// 🧠 Esquema de validação
 const minCharacteresOfTitle = 3;
 const maxCharacteresOfTitle = 25;
 
@@ -51,7 +51,7 @@ export function UpdateTaskForm({ task, onClose }: UpdateTaskFormProps) {
   const { refetchTaskData } = useTasksContext();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // 🎯 Configuração do React Hook Form
+  // Configuração do formulário
   const formMethods = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -64,7 +64,7 @@ export function UpdateTaskForm({ task, onClose }: UpdateTaskFormProps) {
 
   const { handleSubmit, control, reset, getValues } = formMethods;
 
-  // 🪄 Configuração da mutation
+  // Mutation
   const {
     mutate: updateTaskRequest,
     isPending,
@@ -74,7 +74,7 @@ export function UpdateTaskForm({ task, onClose }: UpdateTaskFormProps) {
     onSuccess: () => {
       toast.success('Tarefa editada com sucesso!');
       reset();
-      onClose?.(); // ✅ chama a prop opcionalmente
+      onClose?.();
       setErrorMessage(null);
       refetchTaskData?.();
     },
@@ -85,12 +85,10 @@ export function UpdateTaskForm({ task, onClose }: UpdateTaskFormProps) {
     },
   });
 
-  // 🚀 Envio do formulário
   const onSubmit: SubmitHandler<FormData> = data => {
     updateTaskRequest({ updatedTask: data });
   };
 
-  // 🔁 Prepara lista de imagens
   const flatImages = React.useMemo(() => {
     return Array.isArray(images[0])
       ? (images as string[][]).flat()
@@ -143,7 +141,7 @@ export function UpdateTaskForm({ task, onClose }: UpdateTaskFormProps) {
             )}
           />
 
-          {/* Seleção de imagens */}
+          {/* Grade de imagens com scroll vertical */}
           <FormField
             control={control}
             name='images'
@@ -153,7 +151,15 @@ export function UpdateTaskForm({ task, onClose }: UpdateTaskFormProps) {
                 <FormItem>
                   <FormLabel>Selecione as imagens</FormLabel>
                   <FormControl>
-                    <div className='grid grid-cols-2 gap-4'>
+                    <div
+                      className='
+                        grid grid-cols-3 gap-4 
+                        max-h-64 overflow-y-auto
+                        p-1 pr-2
+                        border rounded-md
+                        scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent
+                      '
+                    >
                       {flatImages.map((image, index) => {
                         const isSelected = selected.includes(image);
                         return (
@@ -171,7 +177,7 @@ export function UpdateTaskForm({ task, onClose }: UpdateTaskFormProps) {
                             className={cn(
                               'relative cursor-pointer rounded-md overflow-hidden border-2 transition-colors',
                               isSelected
-                                ? 'border-primary border-4'
+                                ? 'border-blue-500'
                                 : 'border-gray-300 hover:border-gray-400',
                             )}
                           >
@@ -210,7 +216,7 @@ export function UpdateTaskForm({ task, onClose }: UpdateTaskFormProps) {
             </Button>
           </div>
 
-          {/* Exibe mensagem de erro */}
+          {/* Erro */}
           {isError && errorMessage && (
             <p className='text-[0.8rem] font-medium text-red-500'>
               {errorMessage || 'Erro ao editar tarefa'}

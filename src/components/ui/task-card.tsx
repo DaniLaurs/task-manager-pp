@@ -174,7 +174,7 @@ export function TaskCard({ task }: TaskCardProps) {
         </CardDescription>
       </CardHeader>
 
-      {/* Carrossel de imagens */}
+      {/* Carrossel — uma imagem por vez, sem scroll vertical */}
       <CardContent className='p-0 mt-3 flex justify-center'>
         <div className='relative w-full rounded-md overflow-hidden'>
           <Carousel className='w-full'>
@@ -184,16 +184,19 @@ export function TaskCard({ task }: TaskCardProps) {
                   key={`${index}-${image}`}
                   className='basis-full select-none'
                 >
-                  <img
-                    src={image}
-                    alt={`Imagem ${index + 1} da tarefa ${task.title}`}
-                    className='w-full h-[150px] object-cover rounded-md select-none pointer-events-none'
-                    draggable={false}
-                  />
+                  <div className='h-[180px] rounded-md'>
+                    <img
+                      src={image}
+                      alt={`Imagem ${index + 1} da tarefa ${task.title}`}
+                      className='w-full h-full object-cover rounded-md select-none pointer-events-none'
+                      draggable={false}
+                    />
+                  </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
 
+            {/* Botões de navegação */}
             <CarouselPrevious className='absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white hover:bg-black/70 rounded-full p-2 transition select-none pointer-events-auto'>
               ‹
             </CarouselPrevious>

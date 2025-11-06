@@ -52,7 +52,7 @@ export function CreateTaskForm({ onClose }: CreateTaskFormProps) {
       reset();
       refetchTaskData?.();
       setErrorMessage(null);
-      onClose?.(); // ✅ chama onClose apenas se for função
+      onClose?.(); // ✅ fecha o modal ao concluir
     },
     onError: (error) => {
       toast.error('Erro ao criar tarefa!');
@@ -73,7 +73,7 @@ export function CreateTaskForm({ onClose }: CreateTaskFormProps) {
   return (
     <FormProvider {...formMethods}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Título */}
+        {/* 🔸 Campo: Título */}
         <FormField
           control={control}
           name="title"
@@ -81,15 +81,14 @@ export function CreateTaskForm({ onClose }: CreateTaskFormProps) {
             <FormItem>
               <FormLabel htmlFor="task-title">Título</FormLabel>
               <FormControl>
-                {/** biome-ignore lint/correctness/useUniqueElementIds: <> */}
-<Input id="task-title" {...field} placeholder="Título da tarefa..." />
+                <Input id="task-title" {...field} placeholder="Título da tarefa..." />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Descrição */}
+        {/* 🔸 Campo: Descrição */}
         <FormField
           control={control}
           name="description"
@@ -97,15 +96,14 @@ export function CreateTaskForm({ onClose }: CreateTaskFormProps) {
             <FormItem>
               <FormLabel htmlFor="task-description">Descrição</FormLabel>
               <FormControl>
-                {/** biome-ignore lint/correctness/useUniqueElementIds: <> */}
-<Input id="task-description" {...field} placeholder="Descrição da tarefa" />
+                <Input id="task-description" {...field} placeholder="Descrição da tarefa..." />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Seleção de imagens */}
+        {/* 🔸 Seleção de imagens (3 colunas + scroll vertical) */}
         <FormField
           control={control}
           name="images"
@@ -115,13 +113,12 @@ export function CreateTaskForm({ onClose }: CreateTaskFormProps) {
               <FormItem>
                 <FormLabel>Selecione as imagens</FormLabel>
                 <FormControl>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-3 gap-4 max-h-[300px] overflow-y-auto pr-2">
                     {flatImages.map((image, index) => {
                       const isSelected = selected.includes(image);
                       return (
-                        // biome-ignore lint/a11y/noStaticElementInteractions: <>
-// biome-ignore lint/a11y/useKeyWithClickEvents: <>
-<div
+
+                        <div
                           key={image}
                           onClick={() =>
                             field.onChange(
@@ -131,7 +128,7 @@ export function CreateTaskForm({ onClose }: CreateTaskFormProps) {
                             )
                           }
                           className={cn(
-                            'cursor-pointer border-2 rounded-md overflow-hidden transition-colors',
+                            'relative cursor-pointer rounded-md overflow-hidden border-2 transition-colors',
                             isSelected
                               ? 'border-primary border-4'
                               : 'border-gray-300 hover:border-gray-400'
@@ -153,7 +150,7 @@ export function CreateTaskForm({ onClose }: CreateTaskFormProps) {
           }}
         />
 
-        {/* Botões */}
+        {/* 🔸 Botões */}
         <div className="flex justify-end gap-3">
           <Button type="button" variant="secondary" onClick={() => reset()}>
             Limpar
@@ -163,7 +160,7 @@ export function CreateTaskForm({ onClose }: CreateTaskFormProps) {
           </Button>
         </div>
 
-        {/* Erro */}
+        {/* 🔸 Mensagem de erro */}
         {isError && errorMessage && (
           <p className="text-red-500 text-sm">{errorMessage}</p>
         )}
